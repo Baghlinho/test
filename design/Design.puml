@@ -1,0 +1,123 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+abstract Card {
+- {final} color: Color
+- {final} value: int
+- behavior: CardBehavior
++ getValue(): int
++ getColor(): Color
+# setBehavior(): void
+}
+class NumberCard {
+- {final} number: int
++ getNumber(): int
+}
+class ActionCard {}
+
+class ReverseCard {}
+class SkipCard {}
+class PlusTwoCard {}
+class PlusFourCard {}
+class WildCard {}
+
+
+interface CardBehavior {
++ behave(): void
+}
+class DrawCard {}
+class SkipTurn {}
+class ReversePlayDirection {}
+class StatePlayColor {}
+
+abstract CardPile {
+- cards: ArrayList<Card>
++ shuffle(): void
++ draw(): Card
++ draw(count: int): Card
+}
+
+class Deck {
+- drawPile: ArrayList<Card>
+- discardPile: ArrayList<Card>
++ addCardToDraw(card: Card): void
++ addCardToDiscard(card: Card): void
++ removeCardFromDraw(): void
++ removeCardFromDiscard(): void
+}
+
+'facade
+abstract Game {
+- deck: Deck
+'# Game()
++ {abstract} play(): void
+# {abstract} nextTurn(): void
+# addCardToDeck(): void
+# addCardsToDeck(count: int): void
+}
+class ClassicGame {
+
+}
+
+class GameDriver{
++ main()
+}
+
+enum Color {
+ Blue
+ Red
+ Green
+ Yellow
+ Wild
+}
+
+abstract Person {}
+class Player {
+- name: String
+- hand: ArrayList<Card>
++ PLayer(name: String)
++ obtainCard(card: Card): void
++ discardCard(card: Card): void
+}
+class Dealer {}
+
+interface Rules {}
+class PlayCardRule {}
+class WinRule {}
+
+abstract UserInterface {}
+class ConsoleInterface {}
+
+Game -- GameDriver
+Game <|-- ClassicGame
+Game o-- Deck
+
+CardBehavior <|.. DrawCard
+CardBehavior <|.. StatePlayColor
+CardBehavior <|.. ReversePlayDirection
+CardBehavior <|.. SkipTurn
+
+Deck *-- Card
+
+Card *-- CardBehavior
+Card *-- Color
+Card <|-- NumberCard
+'Card <|-- ActionCard
+'Card <|-- WildCard
+Card <|-- ReverseCard
+Card <|-- SkipCard
+Card <|-- PlusTwoCard
+Card <|-- PlusFourCard
+Card <|-- WildCard
+
+
+
+UserInterface <|-- ConsoleInterface
+
+Rules <|-- PlayCardRule
+Rules <|-- WinRule
+
+Person <|-- Player
+Person <|-- Dealer
+
+@enduml
