@@ -1,4 +1,4 @@
 package org.example.model.card;
 
-public abstract class Card {
+public class Card {
 }

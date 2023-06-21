@@ -7,31 +7,23 @@ import java.util.ArrayList;
 public class Player {
     private final String name;
     private final ArrayList<Card> hand;
-    private CardPile discardPile;
-    private CardPile drawPile;
 
-    public Player(String name, CardPile discardPile, CardPile drawPile) {
+    public Player(String name) {
         this.name = name;
-        this.discardPile = discardPile;
-        this.drawPile = drawPile;
         hand = new ArrayList<>();
     }
 
-    public void drawCard() {
-        Card card = drawPile.popCard();
+    public void obtainCard(Card card) {
+        if(card == null)
+            throw new IllegalArgumentException("Card can't be null");
         hand.add(card);
-        if(drawPile.isEmpty()) {
-            discardPile.shuffle();
-            drawPile = discardPile;
-            discardPile = new CardPile();
-        }
     }
 
-    public void discardCard(Card card) {
+    public Card discardCard(Card card) {
         boolean isCardExist = hand.remove(card);
         if (!isCardExist)
             throw new IllegalArgumentException("Card does not exist");
-        discardPile.pushCard(card);
+        return card;
     }
 
     public String getName() {

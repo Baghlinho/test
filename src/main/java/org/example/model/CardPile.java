@@ -3,31 +3,26 @@ package org.example.model;
 import org.example.model.card.Card;
 
 import java.util.Collections;
-import java.util.EmptyStackException;
 import java.util.Stack;
 
 public class CardPile {
     private final Stack<Card> cards = new Stack<>();
 
     public void pushCard(Card card) {
-        if(card == null)
-            throw new IllegalArgumentException("Card can't be null");
+//        if(card == null)
+//            throw new IllegalArgumentException("Card can't be null");
         cards.push(card);
     }
 
     public Card popCard() {
-        try {
-            Card card = cards.pop();
-        }
-        catch (EmptyStackException ex) {
-            System.out.println("STACK EMPTY");
-            // throw EmptyCardPileException();
-        }
+//        if(isEmpty())
+//            throw new NoSuchElementException("Card pile is empty");
         return cards.pop();
-
     }
 
     public Card peekTopCard() {
+//        if(isEmpty())
+//            throw new NoSuchElementException("Card pile is empty");
         return cards.peek();
     }
 

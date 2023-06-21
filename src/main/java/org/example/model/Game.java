@@ -13,11 +13,13 @@ public class Game extends Observable {
     private int turn;
     private boolean isDone;
     public void play () {
-       initializePiles();
-       initializePlayers();
+    initializePiles();
+    initializePlayers();
         while (true){
             for (Player player: players) {
-                player.drawCard();
+                player.obtainCard(drawPile.popCard());
+                if(drawPile.isEmpty())
+                    reOrganizeCards();
                 if(drawPile.isEmpty()){
                     System.out.println("draw pile empty");
                     break;
@@ -47,7 +49,7 @@ public class Game extends Observable {
         for (int i = 0; i < playersCount; i++) {
             System.out.printf("Player %d name: ", i+1);
             String playerName = scanner.nextLine();
-            players[i] = new Player(playerName, discardPile, drawPile);
+            players[i] = new Player(playerName);
         }
     }
 
@@ -70,5 +72,23 @@ public class Game extends Observable {
 
     private Card getLastCardDiscarded() {
         return discardPile.peekTopCard();
+    }
+
+    private void drawCard(Player player) {
+        Card card = drawPile.popCard();
+        player.obtainCard(card);
+    }
+
+    private void discardCard(Player player) {
+//        promptPlayer
+        Card card = new Card();
+        player.discardCard(card);
+        discardPile.pushCard(card);
+    }
+
+    private void reOrganizeCards() {
+        discardPile.shuffle();
+        drawPile = discardPile;
+        discardPile = new CardPile();
     }
 }

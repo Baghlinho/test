@@ -20,7 +20,7 @@ public class GameView implements Observer {
     public void getNumberOfPlayers() {
         System.out.print("- Number of players: ");
         int numberPlayers = Integer.parseInt(scanner.nextLine());
-        controller.setNumberOfPlayers();
+//        controller.setNumberOfPlayers();
     }
 
     public void displayPlayer(Player player) {
@@ -30,7 +30,7 @@ public class GameView implements Observer {
     public void getNumberOfCards() {
         System.out.print("- Number of cards: ");
         int numberCards = Integer.parseInt(scanner.nextLine());
-        controller.setNumberOfCards();
+//        controller.setNumberOfCards();
     }
 
     @Override
