@@ -53,11 +53,11 @@ public class Game extends Observable {
         }
     }
 
-//    public void nextTurn() {
-//        turn = (turn + 1) % players.length;
-//        incrementBehavior;
-//        decrementBehavior;
-//    }
+    public void nextTurn() {
+        turn = (turn + 1) % players.length;
+        incrementBehavior;
+        decrementBehavior;
+    }
 
     private void addCardToDeck(Enum CardType) {
         // create card using factory creation method
@@ -76,14 +76,14 @@ public class Game extends Observable {
 
     private void drawCard(Player player) {
         Card card = drawPile.popCard();
-        player.obtainCard(card);
+//        player.obtainCard(card);
     }
 
     private void discardCard(Player player) {
 //        promptPlayer
-        Card card = new Card();
-        player.discardCard(card);
-        discardPile.pushCard(card);
+//        Card card = new Card();
+//        player.discardCard(card);
+//        discardPile.pushCard(card);
     }
 
     private void reOrganizeCards() {

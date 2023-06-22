@@ -1,12 +1,8 @@
 package org.example.model.card;
 
-public class WildCard extends NumberCard {
-    public WildCard(CardColor color, int value) {
-        super(color, value, CardType.Wild);
-    }
+public abstract class WildCard extends Card{
 
-    @Override
-    public void doActions() {
-        actions.switchColor();
+    protected WildCard(int value, String symbol) {
+        super(Color.NONE, value, symbol);
     }
 }

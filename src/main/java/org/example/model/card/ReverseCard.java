@@ -1,12 +1,17 @@
 package org.example.model.card;
 
-public class ReverseCard extends NumberCard {
-    public ReverseCard(CardColor color) {
-        super(color, 20, CardType.Action);
+import org.example.model.effects.CardEffect;
+import org.example.model.effects.InitiateNextTurnEffect;
+import org.example.model.effects.ReverseDirectionEffect;
+
+public class ReverseCard extends ActionCard {
+    public ReverseCard(Color color) {
+        super(color, 20, "<-");
     }
 
     @Override
-    public void doActions() {
-        actions.reverse();
+    protected CardEffect buildEffect() {
+        CardEffect effect = new InitiateNextTurnEffect();
+        return new ReverseDirectionEffect(effect);
     }
 }

@@ -1,14 +1,19 @@
 package org.example.model.card;
 
-public class PlusFourCard extends NumberCard {
+import org.example.model.effects.CardEffect;
+import org.example.model.effects.CurrentPlayerDrawEffect;
+import org.example.model.effects.InitiateNextTurnEffect;
+import org.example.model.effects.ProceedNextPlayerEffect;
+
+public class PlusFourCard extends WildCard {
     public PlusFourCard() {
-        super(CardColor.Wild, 20, CardType.Wild);
+        super(20, "+4");
     }
 
     @Override
-    public void doActions() {
-        actions.switchColor();
-        actions.draw(4);
-        actions.skip();
+    protected CardEffect buildEffect() {
+        CardEffect effect = new InitiateNextTurnEffect();
+        effect = new CurrentPlayerDrawEffect(effect, 4);
+        return new ProceedNextPlayerEffect(effect, 1);
     }
 }
