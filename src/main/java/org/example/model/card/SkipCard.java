@@ -1,7 +1,7 @@
 package org.example.model.card;
 
 import org.example.model.effects.CardEffect;
-import org.example.model.effects.InitiateNextTurnEffect;
+import org.example.model.effects.BaseEffect;
 import org.example.model.effects.ProceedNextPlayerEffect;
 
 public class SkipCard extends ActionCard {
@@ -9,9 +9,18 @@ public class SkipCard extends ActionCard {
         super(color, 20,"@");
     }
 
+    public SkipCard(SkipCard prototype) {
+        super(prototype);
+    }
+
     @Override
     protected CardEffect buildEffect() {
-        CardEffect effect = new InitiateNextTurnEffect();
-        return new ProceedNextPlayerEffect(effect, 1);
+        CardEffect effect = new BaseEffect();
+        return new ProceedNextPlayerEffect(effect, 2);
+    }
+
+    @Override
+    public Card clone() {
+        return new SkipCard(this);
     }
 }

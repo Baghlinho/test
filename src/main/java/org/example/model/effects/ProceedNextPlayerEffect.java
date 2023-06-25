@@ -1,6 +1,6 @@
 package org.example.model.effects;
 
-import org.example.model.Game;
+import org.example.model.games.Game;
 
 public class ProceedNextPlayerEffect extends EffectDecorator {
 
@@ -12,9 +12,7 @@ public class ProceedNextPlayerEffect extends EffectDecorator {
     public void executeEffect(Game game) {
         super.executeEffect(game);
         for (int i = 0; i < getTimes(); i++) {
-//            game.incrementPlayer();
+            game.nextPlayer();
         }
     }
-
-    //NOTE : choose player prompt effect is a different class that can be extended
 }

@@ -1,6 +1,6 @@
 package org.example.model.card;
 
-import org.example.model.Game;
+import org.example.model.games.Game;
 
 public class CardActions {
     private Game game;

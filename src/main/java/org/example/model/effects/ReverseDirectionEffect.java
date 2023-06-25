@@ -1,6 +1,6 @@
 package org.example.model.effects;
 
-import org.example.model.Game;
+import org.example.model.games.Game;
 
 public class ReverseDirectionEffect extends EffectDecorator {
 
@@ -11,6 +11,6 @@ public class ReverseDirectionEffect extends EffectDecorator {
     @Override
     public void executeEffect(Game game) {
         super.executeEffect(game);
-        //game.reverseDirectionOfPlay();
+        game.reverseDirection();
     }
 }

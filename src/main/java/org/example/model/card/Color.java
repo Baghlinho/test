@@ -1,19 +1,19 @@
 package org.example.model.card;
 
 public enum Color {
-    RED("R"),
-    BLUE("B"),
-    YELLOW("Y"),
-    GREEN("G"),
-    NONE("-");
+    RED("\u001B[31m"),
+    BLUE("\u001B[34m"),
+    YELLOW("\u001B[33m"),
+    GREEN("\u001B[32m"),
+    WILD("\u001B[45m\u001B[30m");
 
-    private final String symbol;
-    private Color(String symbol) {
-        this.symbol = symbol;
+    private final String code;
+    Color(String code) {
+        this.code = code;
     }
 
     @Override
     public String toString() {
-        return symbol;
+        return code;
     }
 }

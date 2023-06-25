@@ -6,4 +6,7 @@ public abstract class ActionCard extends Card {
         super(color, value, symbol);
     }
 
+    protected ActionCard(ActionCard prototype){
+        super(prototype);
+    }
 }

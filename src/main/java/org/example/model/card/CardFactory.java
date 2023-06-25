@@ -1,4 +1,4 @@
-package org.example.model.effects;
+package org.example.model.card;
 
 import org.example.model.card.*;
 
@@ -6,26 +6,26 @@ public class CardFactory {
     public Card createNumberCard(Color color, int value) {
         return new NumberCard(color, value);
     }
-    public Card createWildCard(WildType type) {
+    public Card createWildCard(String type) {
         switch (type) {
-            case Wild:
+            case "Wild":
                 return new Wild();
-            case WildFour:
+            case "WildFour":
                 return new PlusFourCard();
             default:
-                throw new IllegalArgumentException("Wild type can't be null");
+                throw new IllegalArgumentException("Invalid wild card type");
         }
     }
-    public Card createActionCard(Color color, ActionType type) {
+    public Card createActionCard(String type, Color color) {
         switch (type) {
-            case DrawTwo:
+            case "DrawTwo":
                 return new PlusTwoCard(color);
-            case Skip:
+            case "Skip":
                 return new SkipCard(color);
-            case Reverse:
+            case "Reverse":
                 return new ReverseCard(color);
             default:
-                throw new IllegalArgumentException("Action type can't be null");
+                throw new IllegalArgumentException("Invalid action card type");
         }
     }
 }

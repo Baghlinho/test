@@ -1,6 +1,6 @@
 package org.example.model.effects;
 
-import org.example.model.Game;
+import org.example.model.games.Game;
 
 public class CurrentPlayerDrawEffect extends EffectDecorator {
 
@@ -11,9 +11,6 @@ public class CurrentPlayerDrawEffect extends EffectDecorator {
     @Override
     public void executeEffect(Game game) {
         super.executeEffect(game);
-        for (int i = 0; i < getTimes(); i++) {
-            // game.drawCardCurrentPlayer();
-            // NOTE: make the method take the number of cards to be drawn
-        }
+        game.drawCards(getTimes());
     }
 }

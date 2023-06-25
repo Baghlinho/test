@@ -1,21 +1,38 @@
 package org.example.model.card;
 
-import org.example.model.Game;
+import org.example.model.games.Game;
 import org.example.model.effects.CardEffect;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Card {
     private final int value;
     private final Color color;
     private final String symbol;
-    private final CardEffect effect;
+    private static final Map<String, String> symbols = new HashMap<>();
+    private CardEffect effect;
 
-    protected Card(Color color, int value, String symbol) {
+    protected Card(Color color, int value, String symbol) { // throws IllegalArgumentException() {
         this.color = color;
         this.value = value;
         this.symbol = symbol;
+        checkCardValidity();
         effect = buildEffect();
+    }
+
+    protected Card(Card prototype){
+        this(prototype.color, prototype.value, prototype.symbol);
+        effect = prototype.effect;
+    }
+
+    private void checkCardValidity() {
+        if(symbol == null || color == null)
+            throw new IllegalArgumentException("symbol and color of card can't be null");
+        String concreteClass = getClass().getName();
+        if(symbols.containsValue(symbol) && !symbols.containsKey(concreteClass))
+            throw new IllegalArgumentException("different cards cannot have the same symbol");
+        symbols.put(concreteClass, symbol);
     }
 
     public Color getColor() {
@@ -32,33 +49,13 @@ public abstract class Card {
 
     @Override
     public String toString() {
-        return color+symbol;
+        return color+symbol+"\u001B[0m";
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Card card = (Card) o;
-
-        if (value != card.value) return false;
-        if (color != card.color) return false;
-        return Objects.equals(symbol, card.symbol);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = value;
-        result = 31 * result + (color != null ? color.hashCode() : 0);
-        result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
-        return result;
-    }
-
-    protected abstract CardEffect buildEffect();
 
     public void executeEffect(Game game) {
         effect.executeEffect(game);
     }
 
+    protected abstract CardEffect buildEffect();
+    public abstract Card clone();
 }

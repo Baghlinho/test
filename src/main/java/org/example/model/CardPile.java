@@ -33,4 +33,15 @@ public class CardPile {
     public void shuffle() {
         Collections.shuffle(cards);
     }
+
+    public int size() {
+        return cards.size();
+    }
+
+    @Override
+    public String toString() {
+        return "CardPile{" +
+                "cards=" + cards +
+                '}';
+    }
 }
