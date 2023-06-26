@@ -3,26 +3,27 @@ package org.example.model;
 import org.example.model.card.Card;
 
 import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 
 public class CardPile {
     private final Stack<Card> cards = new Stack<>();
 
     public void pushCard(Card card) {
-//        if(card == null)
-//            throw new IllegalArgumentException("Card can't be null");
+        if(card == null)
+            throw new IllegalArgumentException("Card can't be null");
         cards.push(card);
     }
 
     public Card popCard() {
-//        if(isEmpty())
-//            throw new NoSuchElementException("Card pile is empty");
+        if(isEmpty())
+            throw new NoSuchElementException("Card pile is empty");
         return cards.pop();
     }
 
     public Card peekTopCard() {
-//        if(isEmpty())
-//            throw new NoSuchElementException("Card pile is empty");
+        if(isEmpty())
+            throw new NoSuchElementException("Card pile is empty");
         return cards.peek();
     }
 
@@ -36,6 +37,10 @@ public class CardPile {
 
     public int size() {
         return cards.size();
+    }
+
+    public void transferCard(CardPile cardPile) {
+        cardPile.pushCard(this.popCard());
     }
 
     @Override

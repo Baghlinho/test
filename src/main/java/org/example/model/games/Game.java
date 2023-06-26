@@ -6,6 +6,10 @@ import org.example.model.card.Card;
 import org.example.model.card.Color;
 import org.example.model.card.CardFactory;
 import org.example.model.dealing.DealStrategy;
+import org.example.model.rules.MatchColorRule;
+import org.example.model.rules.MatchSymbolRule;
+import org.example.model.rules.PlayCardRule;
+import org.example.model.rules.WildCardRule;
 import org.example.view.ConsoleInterface;
 import org.example.view.UnoInterface;
 
@@ -16,92 +20,97 @@ public abstract class Game extends Observable {
     protected CardPile drawPile, discardPile;
     protected Player[] players;
     protected Player currentPlayer;
-    private int turn, direction, cardsEach;
+    private int turn;
+    private int direction;
+    private final int cardsEach;
+    private final int rounds;
     private boolean isCardPlayed;
     private static final int LEFT_DIRECTION = 1, RIGHT_DIRECTION = -1;
     private final UnoInterface userInterface;
     private final DealStrategy dealStrategy;
+    private String currentPlayCardRule;
+    private PlayCardRule[] rules;
 
-    protected Game(int cardsEach) {
+    protected Game(int cardsEach, int rounds) {
         this.cardsEach = cardsEach;
+        this.rounds = rounds;
         direction = LEFT_DIRECTION;
         cardFactory = new CardFactory();
         discardPile = new CardPile();
         drawPile = new CardPile();
         userInterface = new ConsoleInterface();
         dealStrategy = getDealStrategy();
+        currentPlayCardRule = "";
     }
 
     public void play () {
-        setUpGame();
-        startGame();
-    }
-
-    protected final void setUpGame() {
-        setUpCardPiles();
+        setUpDrawPile();
         initializePlayers();
-        dealCards();
-        getLastCardDiscarded().executeEffect(this);
+        currentPlayer = players[0];
+        for (int i = 0; i < rounds; i++) {
+            for (int j = 0; j < i; j++) {
+                nextPlayer();
+            }
+            userInterface.announceBeginRound(i+1, currentPlayer.getName());
+            playRound();
+            currentPlayer = players[0];
+            resetCardPiles();
+        }
+        displayGameWinner();
     }
 
-    protected final void startGame() {
+    private void displayGameWinner() {
+        Player bestPlayer = players[0];
+        int secondBestScore = 0;
+        for (int i = 1; i < players.length; i++) {
+            if(players[i].getScore() >= bestPlayer.getScore()) {
+                secondBestScore = bestPlayer.getScore();
+                bestPlayer = players[i];
+            }
+        }
+        if(bestPlayer.getScore() == secondBestScore)
+            userInterface.announceDraw();
+        userInterface.announceGameWinner(bestPlayer.getName());
+    }
+
+    protected final void playRound() {
+        dealCards();
+        drawPile.transferCard(discardPile);
+        getLastCardDiscarded().executeEffect(this);
+        rules = getPlayCardRule(currentPlayCardRule);
         while(!playTurn()) {
             if(!isCardPlayed)
                 nextPlayer();
             else isCardPlayed = false;
         }
-//        sayUno();
     }
 
     public boolean playTurn() {
         userInterface.displayTurnInfo(currentPlayer, getLastCardDiscarded());
+        currentPlayer.updateValidIndices(rules);
         String validIndices = currentPlayer.getValidIndices();
-        userInterface.displayValidIndices(validIndices);
-//        if(validIndices.equals("[]")) {
-//            drawCards(1);
-//        }
-//        validIndices = currentPlayer.getValidIndices();
-//        if(validIndices.equals("[]")) {
-//            userInterface.displayPlayNotPossible();
-//            return;
-//        }
-//        if(currentPlayer.getHandSize() == 2)
-//            sayUno();
-        if(currentPlayer.isHandEmpty()){
-            userInterface.displayGameWinner(currentPlayer.getName());
-            return true;
+        if(validIndices.equals("[]")) {
+            userInterface.promptDrawCard();
+            drawCards(1);
+            userInterface.displayDrawnCard(currentPlayer.getCard(currentPlayer.getHandSize()-1));
+            currentPlayer.updateValidIndices(rules);
+            validIndices = currentPlayer.getValidIndices();
         }
-        discardCard();
+        if(validIndices.equals("[]")) {
+            userInterface.displayPlayNotPossible();
+            return false;
+        }
+        userInterface.displayValidIndices(validIndices);
         isCardPlayed = true;
-        return false;
+        return discardCard();
     }
 
-    private void setUpCardPiles() {
-        setUpDrawPile();
-        discardPile.pushCard(drawPile.popCard());
+    private void sayUno() {
+        String input = userInterface.promptSayUno();
+        if(!input.equals("uno")) {
+            drawCards(2);
+        }
     }
-
-//    private void sayUno() {
-//        FutureTask<Boolean> sayUno = new FutureTask<>(this::waitUntilSayUno);
-//        ExecutorService executor = Executors.newFixedThreadPool(2);
-//        executor.execute(sayUno);
-//        try {
-//            sayUno.get(5000, TimeUnit.MILLISECONDS);
-//        } catch (TimeoutException e) {
-//            drawCards(4);
-//        } catch (ExecutionException | InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    private boolean waitUntilSayUno() {
-//        String input = userInterface.promptSayUno().toLowerCase().trim();
-//        while(!input.equals("uno")) {
-//            input = userInterface.chat().toLowerCase().trim();
-//        }
-//        return true;
-//        // IDK how to remove return value
-//    }
 
     protected final void addWildCard(String type, int count) {
         Card card = cardFactory.createWildCard(type);
@@ -138,7 +147,6 @@ public abstract class Game extends Observable {
         for (int i = 0; i < count; i++) {
             players[i] = new Player(names[i]);
         }
-        currentPlayer = players[0];
     }
 
     public void dealCards() {
@@ -163,24 +171,43 @@ public abstract class Game extends Observable {
 
     public void drawCards(int count) {
         for (int i = 0; i < count; i++) {
-            if(drawPile.isEmpty())
-                makeDiscardPileDrawPile();
+            if(drawPile.isEmpty()) {
+                userInterface.notifyDrawPileEmpty();
+                resetCardPiles();
+            }
             Card card = drawPile.popCard();
             currentPlayer.obtainCard(card);
         }
     }
 
-    public void discardCard() {
-        int cardIndex = userInterface.promptDiscard();
-        Card card = currentPlayer.discardCard(cardIndex);
-        discardPile.pushCard(card);
-        card.executeEffect(this);
+    public boolean discardCard() {
+        if (currentPlayer.getHandSize() == 1) {
+            userInterface.announceRoundWinner(currentPlayer.getName());
+            displayPlayerScores();
+            Card card = currentPlayer.discardCard(0);
+            discardPile.pushCard(card);
+            return true;
+        }
+        else {
+            int cardIndex = userInterface.promptDiscard();
+            Card card = currentPlayer.discardCard(cardIndex);
+            discardPile.pushCard(card);
+            if(currentPlayer.getHandSize() == 1)
+                sayUno();
+            card.executeEffect(this);
+            rules = getPlayCardRule(currentPlayCardRule);
+            setPlayCardRule("");
+            return false;
+        }
     }
 
-    private void makeDiscardPileDrawPile() {
-        discardPile.shuffle();
-        drawPile = discardPile;
-        discardPile = new CardPile();
+    private void resetCardPiles() {
+        for(Player player: players)
+            while(player.getHandSize() != 0)
+                drawPile.pushCard(player.removeCard(0));
+        while(!discardPile.isEmpty())
+            discardPile.transferCard(drawPile);
+        drawPile.shuffle();
     }
 
     public int getPlayersCount() {
@@ -195,11 +222,36 @@ public abstract class Game extends Observable {
 
     protected abstract DealStrategy getDealStrategy();
 
-    public boolean isCardPlayed() {
-        return isCardPlayed;
-    }
-
     public void setCardPlayed(boolean cardPlayed) {
         isCardPlayed = cardPlayed;
+    }
+
+    public void displayPlayerScores() {
+        for (int i = (turn+1) % players.length; i != turn; i = (i+1) % players.length) {
+            currentPlayer.setScore(currentPlayer.getScore() + players[i].computeTotalValue());
+        }
+        for(Player player: players)
+            userInterface.displayPlayerScore(player.getName(), player.getScore());
+    }
+
+    public void setPlayCardRule(String rule) {
+        this.currentPlayCardRule = rule;
+    }
+
+    protected PlayCardRule[] getDefaultPlayCardRule() {
+        Color colorToMatch = getLastCardDiscarded().getColor();
+        String symbolToMatch = getLastCardDiscarded().getSymbol();
+        PlayCardRule defaultRule = new WildCardRule();
+        defaultRule = new MatchSymbolRule(defaultRule, symbolToMatch);
+        defaultRule = new MatchColorRule(defaultRule, colorToMatch);
+        return new PlayCardRule[]{defaultRule};
+    }
+
+    public PlayCardRule[] getPlayCardRule(String rule) {
+        if (rule.equals("SelectColor")) {
+            Color color = userInterface.promptSelectColor(Color.values());
+            return new PlayCardRule[]{new MatchColorRule(new WildCardRule(), color)};
+        }
+        return getDefaultPlayCardRule();
     }
 }

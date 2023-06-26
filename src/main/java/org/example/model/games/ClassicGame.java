@@ -6,7 +6,7 @@ import org.example.model.dealing.DealStrategy;
 
 public class ClassicGame extends Game {
     public ClassicGame() {
-        super(7);
+        super(7, 3);
     }
 
 //    MAKE THIS A DEFAULT DECK SETUP

@@ -29,6 +29,8 @@ public abstract class Card {
     private void checkCardValidity() {
         if(symbol == null || color == null)
             throw new IllegalArgumentException("symbol and color of card can't be null");
+        if(color == Color.WILD && !(this instanceof WildCard))
+            throw new IllegalArgumentException("only wild cards can have the wild color attribute");
         String concreteClass = getClass().getName();
         if(symbols.containsValue(symbol) && !symbols.containsKey(concreteClass))
             throw new IllegalArgumentException("different cards cannot have the same symbol");
@@ -45,6 +47,12 @@ public abstract class Card {
 
     public String getSymbol(){
         return symbol;
+    }
+
+    public static String[] getAllSymbols () {
+        String[] symbolsArray = new String[symbols.size()];
+        symbols.values().toArray(symbolsArray);
+        return symbolsArray;
     }
 
     @Override
