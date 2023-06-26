@@ -4,6 +4,7 @@ import org.example.model.Player;
 import org.example.model.card.Card;
 import org.example.model.card.Color;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class ConsoleInterface implements UnoInterface{
@@ -32,11 +33,12 @@ public class ConsoleInterface implements UnoInterface{
     }
 
     @Override
-    public void displayTurnInfo(Player player, Card lastDiscardCard) {
+    public void displayTurnInfo(Player player, Card lastDiscardCard, int drawPileSize) {
         // split into display name and display hand and display discard pile
         System.out.println("*****************************");
         System.out.println("- Turn: " + player.getName());
         System.out.println("- Hand: " + player.getHand());
+        System.out.println("- Size of draw pile: " + drawPileSize);
         System.out.println("- Discard pile card: " + lastDiscardCard);
     }
 
@@ -47,14 +49,14 @@ public class ConsoleInterface implements UnoInterface{
     }
 
     @Override
-    public void promptDrawCard() {
-        System.out.print("- You can't play any card, you have to draw a card by pressing Enter: ");
+    public void promptNoPlayDrawPen(int count) {
+        System.out.print("- You can't play any card, you have to draw "+ count +" card(s) by pressing Enter: ");
         scanner.nextLine();
     }
 
     @Override
-    public void displayDrawnCard(Card card) {
-        System.out.println("- Drawn card: " + card);
+    public void displayDrawnCards(Card[] cards) {
+        System.out.println("- Drawn cards: " + Arrays.toString(cards));
     }
 
     @Override
@@ -104,7 +106,7 @@ public class ConsoleInterface implements UnoInterface{
     @Override
     public void announceBeginRound(int round, String name) {
         System.out.println("*****************************");
-        System.out.printf("Round %d: %s starts by discarding the first card from the draw pile\n", round, name);
+        System.out.printf("Round %d: %s starts by discarding the first non-wild card from the draw pile\n", round, name);
     }
 
     @Override
@@ -124,6 +126,11 @@ public class ConsoleInterface implements UnoInterface{
         int choice = Integer.parseInt(chat());
         // throw exception
         return values[choice-1];
+    }
+
+    @Override
+    public void forgotToSayUno(int numCards) {
+        System.out.printf("- You didn't say uno! your penalty is drawing %d cards\n", numCards);
     }
 
     @Override

@@ -11,6 +11,6 @@ public class SelectPlayColorEffect extends EffectDecorator {
     @Override
     public void executeEffect(Game game) {
         super.executeEffect(game);
-        game.setPlayCardRule("SelectColor");
+        game.selectPlayColor();
     }
 }

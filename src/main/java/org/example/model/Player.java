@@ -83,7 +83,7 @@ public class Player {
         return isValid;
     }
 
-    public int computeTotalValue() {
+    public int computeHandValue() {
         int total = 0;
         for(Card card: hand)
             total += card.getValue();

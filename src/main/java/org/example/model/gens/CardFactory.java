@@ -1,4 +1,4 @@
-package org.example.model.card;
+package org.example.model.gens;
 
 import org.example.model.card.*;
 

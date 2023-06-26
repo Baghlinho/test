@@ -6,7 +6,7 @@ public class AllAtOnceStrategy implements DealStrategy {
     @Override
     public void deal(Game game) {
         for (int i = 0; i < game.getPlayersCount(); i++) {
-            game.drawCards(game.getCardsEach());
+            game.drawCards(game.getDealtCards());
             game.nextPlayer();
         }
     }
