@@ -1,7 +1,7 @@
 package org.example;
 
-import org.example.model.games.ClassicGame;
-import org.example.model.games.Game;
+import org.example.game.ClassicGame;
+import org.example.game.Game;
 
 public class GameDriver {
     public static void main(String[] args) {
